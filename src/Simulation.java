@@ -5,8 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class Simulation extends Frame implements Runnable{
     boolean run = true;
@@ -37,11 +37,14 @@ public class Simulation extends Frame implements Runnable{
 
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
-        List<Entity> entities = new ArrayList<>(world.entities);
+        Collection<Entity> entities = new HashSet<>(world.entities);
         for (Entity entity : entities) {
-            Ellipse2D.Double circle = new Ellipse2D.Double(entity.p.x, entity.p.y, entity.radius, entity.radius);
+            double diameter = entity.radius * 2;
+            Ellipse2D.Double circle = new Ellipse2D.Double(entity.p.x, entity.p.y, diameter, diameter);
             g2d.setColor(Color.red);
             g2d.fill(circle);
+            g2d.setColor(Color.black);
+            g2d.draw(circle);
         }
     }
 
