@@ -33,10 +33,23 @@ public class Point {
         double delta_x = distance * Math.cos(angle);
         double new_y = y + delta_y;
         double new_x = x + delta_x;
-        if (new_y < dimensions.y && new_y > 0) {
+        if (new_y >= dimensions.y) {
+            y = dimensions.y;
+        }
+        else if (new_y <= 0) {
+            y = 0;
+        }
+        else {
             y = new_y;
         }
-        if (new_x < dimensions.x && new_x > 0) {
+
+        if (new_x >= dimensions.x) {
+            x = dimensions.x;
+        }
+        else if (new_x <= 0) {
+            x = 0;
+        }
+        else {
             x = new_x;
         }
     }

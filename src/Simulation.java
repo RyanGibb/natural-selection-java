@@ -37,10 +37,13 @@ public class Simulation extends Frame implements Runnable{
 
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        Collection<Entity> entities = new HashSet<>(world.animals);
-        entities.addAll(world.plants);
-        for (Entity entity : entities) {
-            draw_circle(g2d, entity.color, entity.loc, entity.radius);
+        Collection<Animal> animals = new HashSet<>(world.animals);
+        Collection<Plant> plants = new HashSet<>(world.plants);
+        for (Animal animal : animals) {
+            draw_circle(g2d, animal.color, animal.loc, animal.radius);
+        }
+        for (Plant plant : plants) {
+            draw_circle(g2d, plant.color, plant.loc, plant.radius);
         }
     }
 
