@@ -25,7 +25,7 @@ public class Plant extends Entity<Plant> {
 
     @Override
     public Plant reproduce() {
-        Point new_loc = Point.random(loc, radius * 20, radius * 20);
+        Point new_loc = Point.random(loc, radius * 2, radius * 2);
         return new Plant(new_loc, reproduce_health_given, radius, attrition,
                 reproduce_health_required, reproduce_health_given, color);
     }

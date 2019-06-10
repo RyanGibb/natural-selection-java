@@ -25,5 +25,4 @@ public abstract class Entity<T extends Entity> {
     public abstract void tick(World world, Iterator<T> iterator, Collection<T> new_entities);
 
     public abstract T reproduce();
-
 }

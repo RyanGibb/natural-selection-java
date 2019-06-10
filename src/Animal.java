@@ -23,9 +23,12 @@ public class Animal extends Entity<Animal> {
         }
         Plant plant = find_plant(world.plants);
         if (plant != null) {
-            world.plants.remove(plant);
-//            plant.health -= 5;
-            health += plant.health * World.ANIMAL_EATING_PLANT_HEALTH_RATIO;
+            double health_gained = plant.health < plant_eating ? plant.health : plant_eating;
+            plant.health -= plant_eating;
+            if (plant.health <= 0) {
+                world.plants.remove(plant);
+            }
+            health += health_gained * World.ANIMAL_EATING_PLANT_HEALTH_RATIO;
         }
         if (health > reproduce_health_required) {
             new_animals.add(reproduce());
@@ -78,9 +81,24 @@ public class Animal extends Entity<Animal> {
     @Override
     public Animal reproduce() {
         Point new_loc = Point.random(loc, radius * 2, radius * 2);
-        return new Animal(new_loc, reproduce_health_given, radius, attrition,
-                reproduce_health_required, reproduce_health_given, color,
-                move_distance, sight, plant_eating);
+        double r = Math.random();
+        return new Animal(new_loc, reproduce_health_given,
+                radius,
+                attrition,
+
+//                (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
+                        reproduce_health_required,
+//                (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
+                        reproduce_health_given,
+                new Color(
+                        ((((int) (r < World.MUTATION_CHANCE ? Math.random() * 50 - 25: 0) + color.getRed()) % 255) + 255) %255,
+                        ((((int) (r < World.MUTATION_CHANCE ? Math.random() * 50 - 25: 0) + color.getBlue()) % 255) + 255) % 255,
+                        ((((int) (r < World.MUTATION_CHANCE ? Math.random() * 50 - 25: 0) + color.getGreen()) % 255) + 255) %255
+                        ),
+                (r < World.MUTATION_CHANCE ? 1 : 0) + move_distance,
+                (r < World.MUTATION_CHANCE ? 10 : 0) + sight,
+//                (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
+                        plant_eating);
     }
 
 }
