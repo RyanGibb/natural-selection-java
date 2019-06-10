@@ -21,11 +21,11 @@ public class Animal extends Entity<Animal> {
             iterator.remove();
             return;
         }
-        Plant plant = find_plant(world);
+        Plant plant = find_plant(world.plants);
         if (plant != null) {
             world.plants.remove(plant);
-            plant.health -= 5;
-            health += plant.health;
+//            plant.health -= 5;
+            health += plant.health * World.ANIMAL_EATING_PLANT_HEALTH_RATIO;
         }
         if (health > reproduce_health_required) {
             new_animals.add(reproduce());
@@ -33,10 +33,10 @@ public class Animal extends Entity<Animal> {
         }
     }
 
-    private Plant find_plant(World world) {
-        Iterator<Plant> iterator = world.plants.iterator();
+    private Plant find_plant(Collection<Plant> plants) {
+        Iterator<Plant> iterator = plants.iterator();
         if (!iterator.hasNext()) {
-            wander(world.dimensions);
+            wander();
             return null;
         }
         Plant plant = iterator.next();
@@ -51,14 +51,14 @@ public class Animal extends Entity<Animal> {
             }
         }
         if (min_distance > sight) {
-            wander(world.dimensions);
+            wander();
         }
         double edge_distance = min_distance - radius - closest.radius;
         if (edge_distance > move_distance) {
-            loc.move_point(closest.loc, move_distance, world.dimensions);
+            loc.move_point(closest.loc, move_distance);
         }
         else {
-            loc.move_point(closest.loc, edge_distance, world.dimensions);
+            loc.move_point(closest.loc, edge_distance);
             return closest;
         }
         return null;
@@ -66,9 +66,10 @@ public class Animal extends Entity<Animal> {
 
     double wander_angle = Math.random() * 2 * Math.PI;
     double wander_angle_delta = Math.PI / 3;
-    private void wander(Point dimensions) {
-        loc.move_angle(wander_angle, move_distance, dimensions);
-        if (loc.x == 0 || loc.x == dimensions.x || loc.y == 0 || loc.y == dimensions.y) {
+    private void wander() {
+        loc.move_angle(wander_angle, move_distance);
+        if (loc.getX() == 0 || loc.getY() == Point.dimensions.getX()
+                || loc.getY() == 0 || loc.getY() == Point.dimensions.getY()) {
             wander_angle += Math.PI;
         }
         wander_angle += (Math.random() * wander_angle_delta) - wander_angle_delta / 2;
@@ -76,7 +77,8 @@ public class Animal extends Entity<Animal> {
 
     @Override
     public Animal reproduce() {
-        return new Animal(Point.random(loc, radius * 2, radius * 2), reproduce_health_given, radius, attrition,
+        Point new_loc = Point.random(loc, radius * 2, radius * 2);
+        return new Animal(new_loc, reproduce_health_given, radius, attrition,
                 reproduce_health_required, reproduce_health_given, color,
                 move_distance, sight, plant_eating);
     }

@@ -12,21 +12,21 @@ public class Plant extends Entity<Plant> {
 
     @Override
     public void tick(World world, Iterator<Plant> iterator, Collection<Plant> new_plants) {
-        health += attrition;
-        if (health < 0) {
-            iterator.remove();
-            return;
-        }
-        if (health > reproduce_health_required) {
-            new_plants.add(reproduce());
-            health -= reproduce_health_given;
-        }
-
+//        health += attrition;
+//        if (health < 0) {
+//            iterator.remove();
+//            return;
+//        }
+//        if (health > reproduce_health_required) {
+//            new_plants.add(reproduce());
+//            health -= reproduce_health_given;
+//        }
     }
 
     @Override
     public Plant reproduce() {
-        return new Plant(Point.random(loc, radius * 10, radius * 10), reproduce_health_given, radius, attrition,
+        Point new_loc = Point.random(loc, radius * 20, radius * 20);
+        return new Plant(new_loc, reproduce_health_given, radius, attrition,
                 reproduce_health_required, reproduce_health_given, color);
     }
 }
