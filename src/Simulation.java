@@ -36,16 +36,21 @@ public class Simulation extends Frame implements Runnable{
     }
 
     public void paint(Graphics g) {
-        Graphics2D g2d = (Graphics2D)g;
-        Collection<Entity> entities = new HashSet<>(world.entities);
+        Graphics2D g2d = (Graphics2D) g;
+        Collection<Entity> entities = new HashSet<>(world.animals);
+        entities.addAll(world.plants);
         for (Entity entity : entities) {
-            double diameter = entity.radius * 2;
-            Ellipse2D.Double circle = new Ellipse2D.Double(entity.p.x, entity.p.y, diameter, diameter);
-            g2d.setColor(Color.red);
-            g2d.fill(circle);
-            g2d.setColor(Color.black);
-            g2d.draw(circle);
+            draw_circle(g2d, entity.color, entity.loc, entity.radius);
         }
+    }
+
+    private void draw_circle(Graphics2D g2d, Color color, Point loc, double radius) {
+        double diameter = radius * 2;
+        Ellipse2D.Double circle = new Ellipse2D.Double(loc.x - radius, loc.y - radius, diameter, diameter);
+        g2d.setColor(color);
+        g2d.fill(circle);
+        g2d.setColor(Color.black);
+        g2d.draw(circle);
     }
 
     @Override

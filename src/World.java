@@ -1,28 +1,38 @@
 import java.util.*;
 
 public class World {
-    public static final int NUM_ENT = 100;
-    public final Point dimensions = new Point(1920, 1080);
+    public static final int NUM_ANIMAL = 10;
+    public static final int NUM_PLANT = 0;
+    public static final double RADIUS_ANIMAL = 10;
+    public static final double RADIUS_PLANT = 3;
+    public static final double ATTRITION_ANIMAL = 0;
+    public static final double ATTRITION_PLANT = 1;
+    public static final double HEALTH_ANIMAL = 100;
+    public static final double HEALTH_PLANT = 10;
+    public final Point dimensions = new Point(1080, 1920);
 
-    Collection<Entity> entities;
+    Collection<Animal> animals;
+    Collection<Plant> plants;
 
     public World () {
-        entities = new HashSet<>();
-        for (int i = 0; i < NUM_ENT; i++) {
-            double x = Math.random() * dimensions.x + 1;
-            double y = Math.random() * dimensions.y + 1;
-            entities.add(new Entity(new Point(x, y)));
+        animals = new HashSet<>();
+        for (int i = 0; i < NUM_ANIMAL; i++) {
+            animals.add(new Animal(Point.random(dimensions), HEALTH_ANIMAL, RADIUS_ANIMAL, ATTRITION_ANIMAL));
+        }
+        plants = new HashSet<>();
+        for (int i = 0; i < NUM_PLANT; i++) {
+            plants.add(new Plant(Point.random(dimensions), HEALTH_PLANT, RADIUS_PLANT, ATTRITION_PLANT));
         }
     }
 
     public void tick() {
-        List<Entity> to_process = new LinkedList<>(entities);
-        while (to_process.size() > 0) {
-            Entity entity = to_process.get(0);
-            Collection<Entity> removed = new ArrayList<>();
-            removed.add(entity);
-            entity.tick(this, removed);
-            to_process.removeAll(removed);
+        for (Iterator<Animal> iterator = animals.iterator(); iterator.hasNext(); ) {
+            Animal animal = iterator.next();
+            animal.tick(this, iterator);
+        }
+        for (Iterator<Plant> iterator = plants.iterator(); iterator.hasNext(); ) {
+            Plant plant = iterator.next();
+            plant.tick(this, iterator);
         }
     }
 
