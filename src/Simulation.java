@@ -1,7 +1,7 @@
 import java.awt.*;
 
 public class Simulation {
-    public static final int SLEEP_MS_BASE = 20;
+    public static final int SLEEP_MS_BASE = 17;
 
     public boolean run = true;
     public int sleep_ms = SLEEP_MS_BASE;
@@ -13,7 +13,7 @@ public class Simulation {
         World world = new World(new Point(screenSize.getHeight(), screenSize.getWidth()));
         Simulation sim = new Simulation(world);
         sim.gui = new SimGUI(sim);
-        sim.run();
+        sim.start();
     }
 
     public Simulation(World world) {
@@ -26,19 +26,29 @@ public class Simulation {
         }
         else {
             run = true;
-            sleep_ms = SLEEP_MS_BASE;
-            run();
+            start();
         }
+    }
+
+    public void start() {
+        Thread thread = new Thread(this::run);
+        thread.start();
     }
 
     public void run() {
         while(run) {
+            long start = System.currentTimeMillis();
             gui.display();
             world.tick();
-            try {
-                Thread.sleep(sleep_ms);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            long end = System.currentTimeMillis();
+            long diff = end - start;
+            long remaining = sleep_ms - diff;
+            if (remaining > 0) {
+                try {
+                    Thread.sleep(remaining);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }

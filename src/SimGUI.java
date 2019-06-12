@@ -64,21 +64,16 @@ public class SimGUI {
 
         JButton btnPause = new JButton("Pause");
         btnPause.addActionListener(e -> sim.pause());
-        btnPause.setToolTipText("Shortcut: Space");
+        btnPause.setToolTipText("Shortcut: a");
         panel.add(btnPause);
 
-        panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), PAUSE_ACTION_MAP_KEY);
+        panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), PAUSE_ACTION_MAP_KEY);
         panel.getActionMap().put(PAUSE_ACTION_MAP_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 new Thread(() -> sim.pause()).run();
             }
         });
-
-        JButton btnSpeedMax = new JButton("Speed: Max");
-        btnSpeedMax.addActionListener(e -> { sim.sleep_ms = 0; });
-        btnSpeedMax.setToolTipText("Shortcut: 0");
-        panel.add(btnSpeedMax);
 
         panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_0, 0), CHANGE_SPEED_ACTION_MAP_KEY + 0);
         panel.getActionMap().put(CHANGE_SPEED_ACTION_MAP_KEY + 0, new AbstractAction() {
@@ -88,25 +83,43 @@ public class SimGUI {
             }
         });
 
-        for (int i = 1; i <= 8; i *= 2) {
-            JButton btnSpeed = new JButton(i + "x");
-            int new_sleep_ms = sim.SLEEP_MS_BASE / i;
-            btnSpeed.addActionListener(e -> {
-                sim.sleep_ms = new_sleep_ms;
-                System.out.println(new_sleep_ms);
-            });
-            btnSpeed.setToolTipText("Shortcut: " + i);
-            panel.add(btnSpeed);
-
-            panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + i, 0), CHANGE_SPEED_ACTION_MAP_KEY + i);
-            panel.getActionMap().put(CHANGE_SPEED_ACTION_MAP_KEY + i, new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent) {
-                    sim.sleep_ms = new_sleep_ms;
-                }
-            });
+        for (int speedModifierInverse = 8, shortcut = 5; speedModifierInverse > 1; speedModifierInverse /= 2, shortcut++) {
+            double speedModifier = 1.0 / speedModifierInverse;
+            int new_sleep_ms = Simulation.SLEEP_MS_BASE * speedModifierInverse;
+            addSpeedModifier(panel, new_sleep_ms, Double.toString(speedModifier), shortcut);
         }
+
+        for (int speedModifier = 1, shortcut = 1; speedModifier <= 8; speedModifier *= 2, shortcut++) {
+            int new_sleep_ms = Simulation.SLEEP_MS_BASE / speedModifier;
+            addSpeedModifier(panel, new_sleep_ms, Integer.toString(speedModifier), shortcut);
+        }
+
+        JButton btnSpeedMax = new JButton("Speed: Max");
+        btnSpeedMax.addActionListener(e -> { sim.sleep_ms = 0; });
+        btnSpeedMax.setToolTipText("Shortcut: 0");
+        panel.add(btnSpeedMax);
+
         return panel;
+    }
+
+    private void addSpeedModifier(JPanel panel, int new_sleep_ms, String label, int shortcut) {
+        JButton btnSpeed = new JButton("x" + label);
+        btnSpeed.addActionListener(e -> {
+            sim.sleep_ms = new_sleep_ms;
+            System.out.println(new_sleep_ms);
+        });
+        btnSpeed.setToolTipText("Shortcut: " + shortcut);
+        panel.add(btnSpeed);
+
+        panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_0 + shortcut, 0),
+                        CHANGE_SPEED_ACTION_MAP_KEY + label);
+        panel.getActionMap().put(CHANGE_SPEED_ACTION_MAP_KEY + label, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                sim.sleep_ms = new_sleep_ms;
+            }
+        });
     }
 
     //    public void renderingLoop() {
