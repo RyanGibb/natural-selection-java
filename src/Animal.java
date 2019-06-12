@@ -5,23 +5,23 @@ import java.util.Iterator;
 public class Animal extends Entity<Animal> {
     double move_distance, sight, plant_eating;
 
-    public Animal(Point loc, double health, double radius, double attrition,
+    public Animal(World world, Point loc, double health, double radius, double attrition,
                   double reproduce_health_required, double reproduce_health_given, Color color,
                   double move_distance, double sight, double plant_eating) {
-        super(loc, health, radius, attrition, reproduce_health_required, reproduce_health_given, color);
+        super(world, loc, health, radius, attrition, reproduce_health_required, reproduce_health_given, color);
         this.move_distance = move_distance;
         this.sight = sight;
         this.plant_eating = plant_eating;
     }
 
     @Override
-    public void tick(World world, Iterator<Animal> iterator, Collection<Animal> new_animals) {
+    public void tick(Iterator<Animal> iterator, Collection<Animal> new_animals) {
         health += attrition;
         if (health < 0) {
             iterator.remove();
             return;
         }
-        Plant plant = find_plant(world.plants);
+        Plant plant = find_plant(world.plants, world.dimensions);
         if (plant != null) {
             double health_gained = plant.health < plant_eating ? plant.health : plant_eating;
             plant.health -= plant_eating;
@@ -36,7 +36,7 @@ public class Animal extends Entity<Animal> {
         }
     }
 
-    private Plant find_plant(Collection<Plant> plants) {
+    private Plant find_plant(Collection<Plant> plants, Point dimensions) {
         Iterator<Plant> iterator = plants.iterator();
         if (!iterator.hasNext()) {
             wander();
@@ -58,31 +58,37 @@ public class Animal extends Entity<Animal> {
         }
         double edge_distance = min_distance - radius - closest.radius;
         if (edge_distance > move_distance) {
-            loc.move_point(closest.loc, move_distance);
+            move_point(closest.loc, move_distance);
         }
         else {
-            loc.move_point(closest.loc, edge_distance);
+            move_point(closest.loc, edge_distance);
             return closest;
         }
         return null;
     }
 
     double wander_angle = Math.random() * 2 * Math.PI;
-    double wander_angle_delta = Math.PI / 3;
+    double wander_angle_delta = Math.PI / 2;
+    double wander_ticks = 10;
+    double wander_count = wander_ticks;
     private void wander() {
-        loc.move_angle(wander_angle, move_distance);
-        if (loc.getX() == 0 || loc.getY() == Point.dimensions.getX()
-                || loc.getY() == 0 || loc.getY() == Point.dimensions.getY()) {
+        move_angle(wander_angle, move_distance);
+        if (loc.getX() == 0 || loc.getY() == world.dimensions.getX()
+                || loc.getY() == 0 || loc.getY() == world.dimensions.getY()) {
             wander_angle += Math.PI;
         }
-        wander_angle += (Math.random() * wander_angle_delta) - wander_angle_delta / 2;
+        if (wander_count <= 0) {
+            wander_angle += (Math.random() * wander_angle_delta) - wander_angle_delta / 2;
+            wander_count = wander_ticks;
+        }
+        wander_count--;
     }
 
     @Override
     public Animal reproduce() {
         Point new_loc = Point.random(loc, radius * 2, radius * 2);
         double r = Math.random();
-        return new Animal(new_loc, reproduce_health_given,
+        return new Animal(world, new_loc, reproduce_health_given,
                 radius,
                 attrition,
 
@@ -99,6 +105,39 @@ public class Animal extends Entity<Animal> {
                 (r < World.MUTATION_CHANCE ? 10 : 0) + sight,
 //                (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
                         plant_eating);
+    }
+
+
+
+    public void move_angle(double angle, double distance) {
+        loc.move_angle(angle, distance);
+        check_loc();
+    }
+
+    public void move_point(Point p, double distance) {
+        loc.move_point(p, distance);
+        check_loc();
+    }
+
+    public void move_random(double distance) {
+        move_random(distance);
+        check_loc();
+    }
+
+    public void check_loc(){
+        if (loc.getY() >= world.dimensions.getY()) {
+            loc.setY(world.dimensions.getY());
+        }
+        else if (loc.getY() <= 0) {
+            loc.setY(0);
+        }
+
+        if (loc.getX() >= world.dimensions.getX()) {
+            loc.setX(world.dimensions.getX());
+        }
+        else if (loc.getX() <= 0) {
+            loc.setX(0);
+        }
     }
 
 }

@@ -1,7 +1,6 @@
 public class Point {
     private double x;
     private double y;
-    public static Point dimensions;
 
     public static final Point ORIGIN = new Point(0, 0);
 
@@ -11,8 +10,8 @@ public class Point {
         return new Point(y, x);
     }
 
-    public static Point random() {
-        return random(ORIGIN, dimensions);
+    public static Point random(World world) {
+        return random(ORIGIN, world.dimensions);
     }
 
     public static Point random(Point p, double delta_y, double delta_x) {
@@ -57,18 +56,7 @@ public class Point {
     }
 
     public void setX(double x) {
-        if (dimensions == null) {
-            this.x = x;
-        }
-        else if (x >= dimensions.getX()) {
-            this.x = dimensions.getX();
-        }
-        else if (x <= 0) {
-            this.x = 0;
-        }
-        else {
-            this.x = x;
-        }
+        this.x = x;
     }
 
     public double getY() {
@@ -76,17 +64,6 @@ public class Point {
     }
 
     public void setY(double y) {
-        if (dimensions == null) {
-            this.y = y;
-        }
-        else if (y >= dimensions.getY()) {
-            this.y = dimensions.getY();
-        }
-        else if (y <= 0) {
-            this.y = 0;
-        }
-        else {
-            this.y = y;
-        }
+        this.y = y;
     }
 }

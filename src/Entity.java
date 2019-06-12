@@ -10,9 +10,11 @@ public abstract class Entity<T extends Entity> {
     double reproduce_health_required;
     double reproduce_health_given;
     Color color;
+    World world;
 
-    public Entity(Point loc, double health, double radius, double attrition,
+    public Entity(World world, Point loc, double health, double radius, double attrition,
                   double reproduce_health_required, double reproduce_health_given, Color color) {
+        this.world = world;
         this.loc = loc;
         this.health = health;
         this.radius = radius;
@@ -22,7 +24,8 @@ public abstract class Entity<T extends Entity> {
         this.color = color;
     }
 
-    public abstract void tick(World world, Iterator<T> iterator, Collection<T> new_entities);
+    public abstract void tick(Iterator<T> iterator, Collection<T> new_entities);
 
     public abstract T reproduce();
+
 }

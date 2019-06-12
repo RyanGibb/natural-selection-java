@@ -8,13 +8,13 @@ public class World {
     public static final double ATTRITION_ANIMAL = -1;
     public static final double ATTRITION_PLANT = 1;
 
-    public static final double PLANT_GROWTH = 3;
+    public static final double PLANT_GROWTH = 2;
     public static final double MUTATION_CHANCE = 0.1;
 
     public static final double STARTING_HEALTH_ANIMAL = 100;
     public static final double STARTING_HEALTH_PLANT = 20;
-    public static final int NUM_ANIMAL = 1;
-    public static final int NUM_PLANT = 100;
+    public static final int NUM_ANIMAL = 100;
+    public static final int NUM_PLANT = 1000;
 
     public static final double REPRODUCE_HEALTH_REQUIRED_PLANT = 200;
     public static final double REPRODUCE_HEALTH_GIVEN_PLANT = 100;
@@ -27,17 +27,19 @@ public class World {
 
     Collection<Animal> animals;
     Collection<Plant> plants;
+    public Point dimensions;
 
-    public World () {
+    public World (Point dimensions) {
+        this.dimensions = dimensions;
         animals = new HashSet<>();
         for (int i = 0; i < NUM_ANIMAL; i++) {
-            animals.add(new Animal(Point.random(), STARTING_HEALTH_ANIMAL, RADIUS_ANIMAL, ATTRITION_ANIMAL,
+            animals.add(new Animal(this, randomPoint(), STARTING_HEALTH_ANIMAL, RADIUS_ANIMAL, ATTRITION_ANIMAL,
                     REPRODUCE_HEALTH_REQUIRED_ANIMAL, REPRODUCE_HEALTH_GIVEN_ANIMAL, new Color(255/2,255/2,255/2),
                     ANIMAL_MOVE_DISTANCE, ANIMAL_SIGHT, ANIMAL_PLANT_EATING));
         }
         plants = new HashSet<>();
         for (int i = 0; i < NUM_PLANT; i++) {
-            plants.add(new Plant(Point.random(), STARTING_HEALTH_PLANT, RADIUS_PLANT, ATTRITION_PLANT,
+            plants.add(new Plant(this, randomPoint(), STARTING_HEALTH_PLANT, RADIUS_PLANT, ATTRITION_PLANT,
                     REPRODUCE_HEALTH_REQUIRED_PLANT, REPRODUCE_HEALTH_GIVEN_PLANT, Color.green));
         }
     }
@@ -46,21 +48,25 @@ public class World {
         Collection<Animal> new_animals = new HashSet<>();
         for (Iterator<Animal> iterator = animals.iterator(); iterator.hasNext(); ) {
             Animal animal = iterator.next();
-            animal.tick(this, iterator, new_animals);
+            animal.tick(iterator, new_animals);
         }
         animals.addAll(new_animals);
 
         Collection<Plant> new_plants = new HashSet<>();
         for (Iterator<Plant> iterator = plants.iterator(); iterator.hasNext(); ) {
             Plant plant = iterator.next();
-            plant.tick(this, iterator, new_plants);
+            plant.tick(iterator, new_plants);
         }
         plants.addAll(new_plants);
 
         for (int i = 0; i < PLANT_GROWTH; i++) {
-            plants.add(new Plant(Point.random(), STARTING_HEALTH_PLANT, RADIUS_PLANT, ATTRITION_PLANT,
+            plants.add(new Plant(this, randomPoint(), STARTING_HEALTH_PLANT, RADIUS_PLANT, ATTRITION_PLANT,
                     REPRODUCE_HEALTH_REQUIRED_PLANT, REPRODUCE_HEALTH_GIVEN_PLANT, Color.green));
         }
+    }
+
+    public Point randomPoint() {
+        return Point.random(this);
     }
 
 }
