@@ -36,8 +36,6 @@ public class SimGUI {
 
         frame.add(getPanel());
         frame.pack();
-//        this.createBufferStrategy(2);
-//        sim.strategy = this.getBufferStrategy();
         return frame;
     }
 
@@ -121,20 +119,6 @@ public class SimGUI {
             }
         });
     }
-
-    //    public void renderingLoop() {
-//        while (render) {
-////            Graphics g = this.getGraphics();
-//            Graphics g;
-//            try {
-//                g = strategy.getDrawGraphics();
-//                render(g);
-//            } finally {
-//                g.dispose();
-//            }
-//            strategy.show();
-//        }
-//    }
 
     private void render(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
