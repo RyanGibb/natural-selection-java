@@ -8,6 +8,7 @@ public class Plant extends Entity<Plant> {
     public Plant(World world, Point loc, double health, double radius, double attrition,
                  double reproduce_health_required, double reproduce_health_given, Color color) {
         super(world, loc, health, radius, attrition, reproduce_health_required, reproduce_health_given, color);
+        check_loc();
     }
 
     @Override

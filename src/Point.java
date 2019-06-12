@@ -1,12 +1,12 @@
 public class Point {
-    private double x;
-    private double y;
+    double x;
+    double y;
 
     public static final Point ORIGIN = new Point(0, 0);
 
     public static Point random(Point from, Point to) {
-        double y = Math.random() * (to.getY() - from.getY()) + from.getY();
-        double x = Math.random() * (to.getX() - from.getX()) + from.getX();
+        double y = Math.random() * (to.y - from.y) + from.y;
+        double x = Math.random() * (to.x - from.x) + from.x;
         return new Point(y, x);
     }
 
@@ -16,32 +16,32 @@ public class Point {
 
     public static Point random(Point p, double delta_y, double delta_x) {
         return random(
-                new Point(p.getY() - delta_y, p.getX() - delta_x),
-                new Point(p.getY() + delta_y, p.getX() + delta_x)
+                new Point(p.y - delta_y, p.x - delta_x),
+                new Point(p.y + delta_y, p.x + delta_x)
         );
     }
 
     public Point(double y, double x) {
-        this.setY(y);
-        this.setX(x);
+        this.y = y;
+        this.x = x;
     }
 
     public double distance(Point p) {
-        return Math.hypot(p.getX() - getX(), p.getY() - getY());
+        return Math.hypot(p.x - x, p.y - y);
     }
 
     public void move_angle(double angle, double distance) {
         double delta_y = distance * Math.sin(angle);
         double delta_x = distance * Math.cos(angle);
-        double new_y = getY() + delta_y;
-        double new_x = getX() + delta_x;
-        setY(new_y);
-        setX(new_x);
+        double new_y = y + delta_y;
+        double new_x = x + delta_x;
+        y = new_y;
+        x = new_x;
     }
 
     public void move_point(Point p, double distance) {
-        double distance_y = p.getY() - getY();
-        double distance_x = p.getX() - getX();
+        double distance_y = p.y - y;
+        double distance_x = p.x - x;
         double angle = Math.atan2(distance_y, distance_x);
         move_angle(angle, distance);
     }
@@ -51,19 +51,4 @@ public class Point {
         move_angle(angle, distance);
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
 }

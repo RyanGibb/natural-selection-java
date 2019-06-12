@@ -12,6 +12,7 @@ public class Animal extends Entity<Animal> {
         this.move_distance = move_distance;
         this.sight = sight;
         this.plant_eating = plant_eating;
+        check_loc();
     }
 
     @Override
@@ -21,7 +22,7 @@ public class Animal extends Entity<Animal> {
             iterator.remove();
             return;
         }
-        Plant plant = find_plant(world.plants, world.dimensions);
+        Plant plant = find_plant();
         if (plant != null) {
             double health_gained = plant.health < plant_eating ? plant.health : plant_eating;
             plant.health -= plant_eating;
@@ -36,8 +37,8 @@ public class Animal extends Entity<Animal> {
         }
     }
 
-    private Plant find_plant(Collection<Plant> plants, Point dimensions) {
-        Iterator<Plant> iterator = plants.iterator();
+    private Plant find_plant() {
+        Iterator<Plant> iterator = world.plants.iterator();
         if (!iterator.hasNext()) {
             wander();
             return null;
@@ -58,10 +59,12 @@ public class Animal extends Entity<Animal> {
         }
         double edge_distance = min_distance - radius - closest.radius;
         if (edge_distance > move_distance) {
-            move_point(closest.loc, move_distance);
+            loc.move_point(closest.loc, move_distance);
+            check_loc();
         }
         else {
-            move_point(closest.loc, edge_distance);
+            loc.move_point(closest.loc, edge_distance);
+            check_loc();
             return closest;
         }
         return null;
@@ -72,9 +75,10 @@ public class Animal extends Entity<Animal> {
     double wander_ticks = 10;
     double wander_count = wander_ticks;
     private void wander() {
-        move_angle(wander_angle, move_distance);
-        if (loc.getX() == 0 || loc.getY() == world.dimensions.getX()
-                || loc.getY() == 0 || loc.getY() == world.dimensions.getY()) {
+        loc.move_angle(wander_angle, move_distance);
+        check_loc();
+        if (loc.x == 0 || loc.y == world.dimensions.x
+                || loc.y == 0 || loc.y == world.dimensions.y) {
             wander_angle += Math.PI;
         }
         if (wander_count <= 0) {
@@ -108,36 +112,5 @@ public class Animal extends Entity<Animal> {
     }
 
 
-
-    public void move_angle(double angle, double distance) {
-        loc.move_angle(angle, distance);
-        check_loc();
-    }
-
-    public void move_point(Point p, double distance) {
-        loc.move_point(p, distance);
-        check_loc();
-    }
-
-    public void move_random(double distance) {
-        move_random(distance);
-        check_loc();
-    }
-
-    public void check_loc(){
-        if (loc.getY() >= world.dimensions.getY()) {
-            loc.setY(world.dimensions.getY());
-        }
-        else if (loc.getY() <= 0) {
-            loc.setY(0);
-        }
-
-        if (loc.getX() >= world.dimensions.getX()) {
-            loc.setX(world.dimensions.getX());
-        }
-        else if (loc.getX() <= 0) {
-            loc.setX(0);
-        }
-    }
 
 }

@@ -28,4 +28,20 @@ public abstract class Entity<T extends Entity> {
 
     public abstract T reproduce();
 
+    public void check_loc(){
+        if (loc.y + radius > world.dimensions.y) {
+            loc.y = world.dimensions.y - radius;
+        }
+        else if (loc.y- radius < 0) {
+            loc.y = loc.x + radius;
+        }
+
+        if (loc.x + radius > world.dimensions.x) {
+            loc.x = world.dimensions.x - radius;
+        }
+        else if (loc.x - radius < 0) {
+            loc.x = loc.x + radius;
+        }
+    }
+
 }

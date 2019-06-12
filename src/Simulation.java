@@ -20,21 +20,6 @@ public class Simulation {
         this.world = world;
     }
 
-    public void pause () {
-        if (run) {
-            run = false;
-        }
-        else {
-            run = true;
-            start();
-        }
-    }
-
-    public void start() {
-        Thread thread = new Thread(this::run);
-        thread.start();
-    }
-
     public void run() {
         while(run) {
             long start = System.currentTimeMillis();
@@ -50,6 +35,21 @@ public class Simulation {
                     Thread.currentThread().interrupt();
                 }
             }
+        }
+    }
+
+    public void start() {
+        Thread thread = new Thread(this::run);
+        thread.start();
+    }
+
+    public void pause () {
+        if (run) {
+            run = false;
+        }
+        else {
+            run = true;
+            start();
         }
     }
 

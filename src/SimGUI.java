@@ -30,7 +30,7 @@ public class SimGUI {
     public JFrame getFrame() {
         JFrame frame = new JFrame(TITLE);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize((int) sim.world.dimensions.getX(),(int) sim.world.dimensions.getY());
+        frame.setSize((int) sim.world.dimensions.x,(int) sim.world.dimensions.y);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setUndecorated(false);
 
@@ -93,7 +93,7 @@ public class SimGUI {
         }
 
         JButton btnSpeedMax = new JButton("Speed: Max");
-        btnSpeedMax.addActionListener(e -> { sim.sleep_ms = 0; });
+        btnSpeedMax.addActionListener(e -> sim.sleep_ms = 0 );
         btnSpeedMax.setToolTipText("Shortcut: 0");
         panel.add(btnSpeedMax);
 
@@ -125,16 +125,16 @@ public class SimGUI {
         g2d.setBackground(Color.WHITE);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (Animal animal : animals) {
-            drawCircle(g2d, animal.color, animal.loc, animal.radius);
+            drawEntity(g2d, animal.color, animal.loc, animal.radius);
         }
         for (Plant plant : plants) {
-            drawCircle(g2d, plant.color, plant.loc, plant.radius);
+            drawEntity(g2d, plant.color, plant.loc, plant.radius);
         }
     }
 
-    private void drawCircle(Graphics2D g2d, Color color, Point loc, double radius) {
+    private void drawEntity(Graphics2D g2d, Color color, Point loc, double radius) {
         double diameter = radius * 2;
-        Ellipse2D.Double circle = new Ellipse2D.Double(loc.getX() - radius, loc.getY() - radius, diameter, diameter);
+        Ellipse2D.Double circle = new Ellipse2D.Double(loc.x - radius, loc.y - radius, diameter, diameter);
         g2d.setColor(color);
         g2d.fill(circle);
         g2d.setColor(Color.black);
