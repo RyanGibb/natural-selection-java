@@ -128,7 +128,7 @@ public class Animal extends Entity<Animal> {
 //                        ((((int) (mutate ? Math.random() * 50 - 25: 0) + color.getBlue()) % 255) + 255) % 255,
 //                        ((((int) (mutate ? Math.random() * 50 - 25: 0) + color.getGreen()) % 255) + 255) %255
 //                ),
-                max_energy/2,
+                0,
                 max_energy,
                 hunger,
                 hunger_damage,

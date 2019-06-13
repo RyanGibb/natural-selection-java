@@ -27,21 +27,11 @@ public class World {
 
     public void tick() {
         new_animals = new HashSet<>();
-        for (Iterator<Animal> iterator = animals.iterator(); iterator.hasNext(); ) {
-            Animal animal = iterator.next();
-            if(animal.tick()){
-                iterator.remove();
-            }
-        }
+        animals.removeIf(Animal::tick);
         animals.addAll(new_animals);
 
         new_plants = new HashSet<>();
-        for (Iterator<Plant> iterator = plants.iterator(); iterator.hasNext(); ) {
-            Plant plant = iterator.next();
-            if(plant.tick()) {
-                iterator.remove();
-            }
-        }
+        plants.removeIf(Plant::tick);
         plants.addAll(new_plants);
 
         for (int i = 0; i < Config.PLANT_GROWTH; i++) {

@@ -9,7 +9,7 @@ public class Config {
     public static final double MAX_HEALTH_ANIMAL = 100;
     public static final double MAX_ENERGY_ANIMAL = 100;
     public static final double RADIUS_ANIMAL = 10;
-    public static final double REPRODUCE_HEALTH_GIVEN_ANIMAL = 50;
+    public static final double REPRODUCE_HEALTH_GIVEN_ANIMAL = 100;
     public static final double ANIMAL_SIGHT = 100;
 
     public static final double MAX_HEALTH_PLANT = 100;
