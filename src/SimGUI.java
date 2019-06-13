@@ -125,20 +125,39 @@ public class SimGUI {
         g2d.setBackground(Color.WHITE);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (Animal animal : animals) {
-            drawEntity(g2d, animal.color, animal.loc, animal.radius);
+            drawEntity(g2d, animal.color, animal, animal.radius);
         }
         for (Plant plant : plants) {
-            drawEntity(g2d, plant.color, plant.loc, plant.radius);
+            drawEntity(g2d, plant.color, plant, plant.radius);
         }
     }
 
-    private void drawEntity(Graphics2D g2d, Color color, Point loc, double radius) {
+    private void drawEntity(Graphics2D g2d, Color color, Entity entity, double radius) {
+        Point p = entity.loc;
         double diameter = radius * 2;
-        Ellipse2D.Double circle = new Ellipse2D.Double(loc.x - radius, loc.y - radius, diameter, diameter);
+        Ellipse2D.Double circle = new Ellipse2D.Double(p.x - radius, p.y - radius, diameter, diameter);
         g2d.setColor(color);
         g2d.fill(circle);
         g2d.setColor(Color.black);
         g2d.draw(circle);
+
+        g2d.setColor(Color.red);
+        double statusBarsSizeRatio = 0.2;
+        double statusBarSize = statusBarsSizeRatio * diameter;
+        Rectangle.Double health = new Rectangle.Double(
+                p.x - radius,
+                p.y - statusBarSize,
+                diameter * entity.health / entity.max_health,
+                statusBarSize);
+        Rectangle.Double energy = new Rectangle.Double(
+                p.x - radius,
+                p.y,
+                diameter * entity.energy / entity.max_energy,
+                statusBarSize);
+        g2d.setColor(Color.red);
+        g2d.fill(health);
+        g2d.setColor(Color.green);
+        g2d.fill(energy);
     }
 
     private void toggleFullscreen() {

@@ -1,14 +1,13 @@
 import java.awt.*;
-import java.util.Collection;
 import java.util.Iterator;
 
 public class Animal extends Entity<Animal> {
     double move_distance, sight, plant_eating;
 
-    public Animal(World world, Point loc, double health, double radius, double attrition,
-                  double reproduce_health_required, double reproduce_health_given, Color color,
+    public Animal(World world, Point loc, double radius, double health, double max_health, double energy, double max_energy,
+                  double attrition, double reproduce_health_given, Color color,
                   double move_distance, double sight, double plant_eating) {
-        super(world, loc, health, radius, attrition, reproduce_health_required, reproduce_health_given, color);
+        super(world, loc, radius, health, max_health, energy, max_energy, attrition, reproduce_health_given, color);
         this.move_distance = move_distance;
         this.sight = sight;
         this.plant_eating = plant_eating;
@@ -16,11 +15,9 @@ public class Animal extends Entity<Animal> {
     }
 
     @Override
-    public void tick(Iterator<Animal> iterator, Collection<Animal> new_animals) {
-        health += attrition;
-        if (health < 0) {
-            iterator.remove();
-            return;
+    public boolean tick() {
+        if(super.tick()){
+            return true;
         }
         Plant plant = find_plant();
         if (plant != null) {
@@ -31,10 +28,11 @@ public class Animal extends Entity<Animal> {
             }
             health += health_gained * World.ANIMAL_EATING_PLANT_HEALTH_RATIO;
         }
-        if (health > reproduce_health_required) {
-            new_animals.add(reproduce());
-            health -= reproduce_health_given;
+        if (health >= max_health) {
+            world.new_animals.add(reproduce());
+            health = max_health - reproduce_health_given;
         }
+        return false;
     }
 
     private Plant find_plant() {
@@ -92,14 +90,17 @@ public class Animal extends Entity<Animal> {
     public Animal reproduce() {
         Point new_loc = Point.random(loc, radius * 2, radius * 2);
         double r = Math.random();
-        return new Animal(world, new_loc, reproduce_health_given,
+//      (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
+        return new Animal(
+                world,
+                new_loc,
                 radius,
+                reproduce_health_given,
+                max_health,
+                energy,
+                max_energy,
                 attrition,
-
-//                (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
-                        reproduce_health_required,
-//                (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
-                        reproduce_health_given,
+                reproduce_health_given,
                 new Color(
                         ((((int) (r < World.MUTATION_CHANCE ? Math.random() * 50 - 25: 0) + color.getRed()) % 255) + 255) %255,
                         ((((int) (r < World.MUTATION_CHANCE ? Math.random() * 50 - 25: 0) + color.getBlue()) % 255) + 255) % 255,
@@ -107,8 +108,7 @@ public class Animal extends Entity<Animal> {
                         ),
                 (r < World.MUTATION_CHANCE ? 1 : 0) + move_distance,
                 (r < World.MUTATION_CHANCE ? 10 : 0) + sight,
-//                (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
-                        plant_eating);
+                plant_eating);
     }
 
 

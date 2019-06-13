@@ -1,30 +1,48 @@
 import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
 
 public abstract class Entity<T extends Entity> {
     Point loc;
     double radius;
-    double attrition;
     double health;
-    double reproduce_health_required;
+    double max_health;
+    double energy;
+    double max_energy;
+    double attrition;
     double reproduce_health_given;
     Color color;
     World world;
 
-    public Entity(World world, Point loc, double health, double radius, double attrition,
-                  double reproduce_health_required, double reproduce_health_given, Color color) {
+    public Entity(World world, Point loc, double radius, double health, double max_health, double energy, double max_energy,
+                  double attrition, double reproduce_health_given, Color color) {
         this.world = world;
         this.loc = loc;
-        this.health = health;
         this.radius = radius;
+        this.health = health;
+        this.max_health = max_health;
+        this.energy = energy;
+        this.max_energy = max_energy;
         this.attrition = attrition;
-        this.reproduce_health_required = reproduce_health_required;
         this.reproduce_health_given = reproduce_health_given;
         this.color = color;
     }
 
-    public abstract void tick(Iterator<T> iterator, Collection<T> new_entities);
+    // return true if dead
+    public boolean tick() {
+        energy += attrition;
+        if (energy < 0) {
+            health += attrition;
+        }
+        else if (energy > max_energy) {
+            energy = max_energy;
+        }
+        if (health < 0) {
+            return true;
+        }
+        else if (health > max_health) {
+            health = max_health;
+        }
+        return false;
+    }
 
     public abstract T reproduce();
 

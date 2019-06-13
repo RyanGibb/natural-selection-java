@@ -1,33 +1,30 @@
 import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
 
 public class Plant extends Entity<Plant> {
-    public final Color color = Color.green;
 
-    public Plant(World world, Point loc, double health, double radius, double attrition,
-                 double reproduce_health_required, double reproduce_health_given, Color color) {
-        super(world, loc, health, radius, attrition, reproduce_health_required, reproduce_health_given, color);
+    public Plant(World world, Point loc, double radius, double health, double max_health, double energy, double max_energy,
+                 double hunger, double reproduce_health_given, Color color) {
+        super(world, loc, radius, health, max_health, energy, max_energy, hunger, reproduce_health_given, color);
         check_loc();
     }
 
     @Override
-    public void tick(Iterator<Plant> iterator, Collection<Plant> new_plants) {
-//        health += attrition;
+    public boolean tick() {
+//        health += hunger;
 //        if (health < 0) {
 //            iterator.remove();
 //            return;
 //        }
 //        if (health > reproduce_health_required) {
-//            new_plants.add(reproduce());
+//            world.new_plants.add(reproduce());
 //            health -= reproduce_health_given;
 //        }
+        return false;
     }
 
     @Override
     public Plant reproduce() {
         Point new_loc = Point.random(loc, radius * 2, radius * 2);
-        return new Plant(world, new_loc, reproduce_health_given, radius, attrition,
-                reproduce_health_required, reproduce_health_given, color);
+        return new Plant(world, new_loc, radius, reproduce_health_given, max_health, energy, max_energy, attrition, reproduce_health_given, color);
     }
 }
