@@ -10,10 +10,6 @@ public class Point {
         return new Point(y, x);
     }
 
-    public static Point random(World world) {
-        return random(ORIGIN, world.dimensions);
-    }
-
     public static Point random(Point p, double delta_y, double delta_x) {
         return random(
                 new Point(p.y - delta_y, p.x - delta_x),

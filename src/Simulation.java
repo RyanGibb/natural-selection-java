@@ -10,14 +10,14 @@ public class Simulation {
 
     public static void main(String[] args) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        World world = new World(new Point(screenSize.getHeight(), screenSize.getWidth()));
-        Simulation sim = new Simulation(world);
+        Point dimensions = new Point(screenSize.getHeight(), screenSize.getWidth());
+        Simulation sim = new Simulation(dimensions);
         sim.gui = new SimGUI(sim);
         sim.start();
     }
 
-    public Simulation(World world) {
-        this.world = world;
+    public Simulation(Point dimensions) {
+        this.world = new World(dimensions);
     }
 
     public void run() {

@@ -2,37 +2,62 @@ import java.awt.*;
 import java.util.Iterator;
 
 public class Animal extends Entity<Animal> {
-    double move_distance, sight, plant_eating;
+    double energy;
+    double max_energy;
+    double hunger;
+    double hunger_damage;
+    double reproduce_health_given;
+    double move_distance;
+    double sight;
+    double plant_eating;
 
-    public Animal(World world, Point loc, double radius, double health, double max_health, double energy, double max_energy,
-                  double attrition, double reproduce_health_given, Color color,
+    public Animal(World world, Point loc, double radius, double health, double max_health, Color color,
+                  double energy, double max_energy, double hunger, double hunger_damage, double reproduce_health_given,
                   double move_distance, double sight, double plant_eating) {
-        super(world, loc, radius, health, max_health, energy, max_energy, attrition, reproduce_health_given, color);
+        super(world, loc, radius, health, max_health, color);
+        this.hunger = hunger;
+        this.energy = energy;
+        this.max_energy = max_energy;
+        this.hunger_damage = hunger_damage;
+        this.reproduce_health_given = reproduce_health_given;
         this.move_distance = move_distance;
         this.sight = sight;
         this.plant_eating = plant_eating;
-        check_loc();
     }
 
     @Override
     public boolean tick() {
+        energy -= hunger;
+        if (energy < 0) {
+            health -= hunger_damage;
+        }
+        else if (energy > 0 && health < max_health) {
+            health += Config.HEALTH_REGAIN;
+            energy -= Config.HEALTH_REGAIN;
+        }
         if(super.tick()){
             return true;
         }
-        Plant plant = find_plant();
+        eatPlant(find_plant());
+        if (health >= max_health) {
+            health = max_health;
+            if (energy >= max_energy) {
+                world.new_animals.add(reproduce());
+                energy = max_energy - reproduce_health_given;
+            }
+        }
+        return false;
+    }
+
+    private void eatPlant(Plant plant) {
         if (plant != null) {
-            double health_gained = plant.health < plant_eating ? plant.health : plant_eating;
+            double energy_gained = plant.health < plant_eating ? plant.health : plant_eating;
             plant.health -= plant_eating;
             if (plant.health <= 0) {
                 world.plants.remove(plant);
             }
-            health += health_gained * World.ANIMAL_EATING_PLANT_HEALTH_RATIO;
+            energy += energy_gained * Config.ANIMAL_EATING_PLANT_RATIO;
         }
-        if (health >= max_health) {
-            world.new_animals.add(reproduce());
-            health = max_health - reproduce_health_given;
-        }
-        return false;
     }
 
     private Plant find_plant() {
@@ -89,7 +114,7 @@ public class Animal extends Entity<Animal> {
     @Override
     public Animal reproduce() {
         Point new_loc = Point.random(loc, radius * 2, radius * 2);
-        double r = Math.random();
+        boolean mutate = Math.random() < Config.MUTATION_CHANCE;
 //      (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
         return new Animal(
                 world,
@@ -97,17 +122,21 @@ public class Animal extends Entity<Animal> {
                 radius,
                 reproduce_health_given,
                 max_health,
-                energy,
+                color,
+//                new Color(
+//                        ((((int) (mutate ? Math.random() * 50 - 25: 0) + color.getRed()) % 255) + 255) %255,
+//                        ((((int) (mutate ? Math.random() * 50 - 25: 0) + color.getBlue()) % 255) + 255) % 255,
+//                        ((((int) (mutate ? Math.random() * 50 - 25: 0) + color.getGreen()) % 255) + 255) %255
+//                ),
+                max_energy/2,
                 max_energy,
-                attrition,
+                hunger,
+                hunger_damage,
                 reproduce_health_given,
-                new Color(
-                        ((((int) (r < World.MUTATION_CHANCE ? Math.random() * 50 - 25: 0) + color.getRed()) % 255) + 255) %255,
-                        ((((int) (r < World.MUTATION_CHANCE ? Math.random() * 50 - 25: 0) + color.getBlue()) % 255) + 255) % 255,
-                        ((((int) (r < World.MUTATION_CHANCE ? Math.random() * 50 - 25: 0) + color.getGreen()) % 255) + 255) %255
-                        ),
-                (r < World.MUTATION_CHANCE ? 1 : 0) + move_distance,
-                (r < World.MUTATION_CHANCE ? 10 : 0) + sight,
+//                (mutate ? 1 : 0) + move_distance,
+                move_distance,
+//                (mutate ? 10 : 0) + sight,
+                sight,
                 plant_eating);
     }
 

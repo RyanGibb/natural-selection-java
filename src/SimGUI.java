@@ -13,6 +13,8 @@ public class SimGUI {
     private static final String CHANGE_SPEED_ACTION_MAP_KEY = "changeSpeed";
 
     private static final String TITLE = "Natural Selection Simulation";
+    private static final Color HEALTH_COLOR = Color.red;
+    private static final Color ENERGY_COLOR = Color.green;
 
     Simulation sim;
     JFrame frame;
@@ -125,39 +127,50 @@ public class SimGUI {
         g2d.setBackground(Color.WHITE);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (Animal animal : animals) {
-            drawEntity(g2d, animal.color, animal, animal.radius);
+            drawAnimal(g2d, animal.color, animal, animal.radius);
         }
         for (Plant plant : plants) {
-            drawEntity(g2d, plant.color, plant, plant.radius);
+            drawPlant(g2d, plant.color, plant, plant.radius);
         }
     }
 
-    private void drawEntity(Graphics2D g2d, Color color, Entity entity, double radius) {
-        Point p = entity.loc;
+    private void drawPlant(Graphics2D g2d, Color color, Plant plant, double radius) {
+        Point topLeft = new Point(plant.loc.y - radius, plant.loc.x - radius);
         double diameter = radius * 2;
-        Ellipse2D.Double circle = new Ellipse2D.Double(p.x - radius, p.y - radius, diameter, diameter);
-        g2d.setColor(color);
-        g2d.fill(circle);
-        g2d.setColor(Color.black);
-        g2d.draw(circle);
+        drawCircle(g2d, plant.color, topLeft, diameter);
+    }
 
-        g2d.setColor(Color.red);
+    private void drawAnimal(Graphics2D g2d, Color color, Animal animal, double radius) {
+        Point topLeft = new Point(animal.loc.y - radius, animal.loc.x - radius);
+        Point centre = animal.loc;
+        double diameter = radius * 2;
+        drawCircle(g2d, animal.color, topLeft, diameter);
+
         double statusBarsSizeRatio = 0.2;
         double statusBarSize = statusBarsSizeRatio * diameter;
+        g2d.setColor(HEALTH_COLOR);
         Rectangle.Double health = new Rectangle.Double(
-                p.x - radius,
-                p.y - statusBarSize,
-                diameter * entity.health / entity.max_health,
+                topLeft.x,
+                centre.y - statusBarSize,
+                diameter * animal.health / animal.max_health,
                 statusBarSize);
         Rectangle.Double energy = new Rectangle.Double(
-                p.x - radius,
-                p.y,
-                diameter * entity.energy / entity.max_energy,
+                topLeft.x,
+                centre.y,
+                diameter * animal.energy / animal.max_energy,
                 statusBarSize);
         g2d.setColor(Color.red);
         g2d.fill(health);
         g2d.setColor(Color.green);
         g2d.fill(energy);
+    }
+
+    private void drawCircle(Graphics2D g2d, Color color, Point p, double diameter) {
+        Ellipse2D.Double circle = new Ellipse2D.Double(p.x, p.y, diameter, diameter);
+        g2d.setColor(color);
+        g2d.fill(circle);
+        g2d.setColor(Color.black);
+        g2d.draw(circle);
     }
 
     private void toggleFullscreen() {
