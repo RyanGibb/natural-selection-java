@@ -18,7 +18,7 @@ public class Config {
     public static final double ANIMAL_EATING_PLANT_RATIO = 0.5;
     public static final double MUTATION_CHANCE = 0.1;
 
-    public static final double ANIMAL_MOVE_DISTANCE = 5;
+    public static final double ANIMAL_MOVE_DISTANCE = 2;
     public static final double ANIMAL_PLANT_EATING = 10;
     public static final double HUNGER = 0.5;
     public static final double HUNGER_DAMAGE = 0.5;
