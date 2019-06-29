@@ -7,7 +7,7 @@ public class Plant extends Entity<Plant> {
     }
 
     @Override
-    public boolean tick() {
+    public TickStatus tick() {
 //        health += hunger;
 //        if (health < 0) {
 //            iterator.remove();
@@ -17,7 +17,7 @@ public class Plant extends Entity<Plant> {
 //            world.new_plants.add(reproduce());
 //            health -= reproduce_health_given;
 //        }
-        return false;
+        return null;
     }
 
     @Override

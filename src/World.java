@@ -2,24 +2,34 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class World {
-    public Collection<Animal> animals;
+    public Collection<Predator> predators;
+    public Collection<Prey> prey;
     public Collection<Plant> plants;
     public Point dimensions;
 
-    public Collection<Animal> new_animals;
+    public Collection<Predator> new_predators;
+    public Collection<Prey> new_prey;
     public Collection<Plant> new_plants;
 
     double growth = 0;
 
     public World (Point dimensions) {
         this.dimensions = dimensions;
-        animals = new HashSet<>();
-        for (int i = 0; i < Config.NUM_ANIMAL; i++) {
-            animals.add(new Animal(this, randomPoint(Config.RADIUS_ANIMAL), Config.RADIUS_ANIMAL,
-                    Config.INITIAL_HEALTH_ANIMAL, Config.ANIMAL_COLOR,
+        predators = new HashSet<>();
+        for (int i = 0; i < Config.NUM_PREDS; i++) {
+            predators.add(new Predator(this, randomPoint(Config.RADIUS_ANIMAL), Config.RADIUS_ANIMAL,
+                    Config.INITIAL_HEALTH_ANIMAL, Config.PREDATOR_COLOR,
                     Config.INITIAL_ENERGY_ANIMAL,
                     Config.REPRODUCE_HEALTH_GIVEN_ANIMAL,
-                    Config.ANIMAL_SIGHT, Config.ANIMAL_PLANT_EATING));
+                    Config.ANIMAL_SIGHT, Config.ANIMAL_EATING_SPEED));
+        }
+        prey = new HashSet<>();
+        for (int i = 0; i < Config.NUM_PREY; i++) {
+            prey.add(new Prey(this, randomPoint(Config.RADIUS_ANIMAL), Config.RADIUS_ANIMAL,
+                    Config.INITIAL_HEALTH_ANIMAL, Config.PREY_COLOR,
+                    Config.INITIAL_ENERGY_ANIMAL,
+                    Config.REPRODUCE_HEALTH_GIVEN_ANIMAL,
+                    Config.ANIMAL_SIGHT, Config.ANIMAL_EATING_SPEED));
         }
         plants = new HashSet<>();
         for (int i = 0; i < Config.NUM_PLANT; i++) {
@@ -29,12 +39,16 @@ public class World {
     }
 
     public void tick() {
-        new_animals = new HashSet<>();
-        animals.removeIf(Animal::tick);
-        animals.addAll(new_animals);
+        new_predators = new HashSet<>();
+        predators.removeIf(predator -> predator.tick() == TickStatus.Dead);
+        predators.addAll(new_predators);
+
+        new_prey = new HashSet<>();
+        prey.removeIf(prey -> prey.tick() == TickStatus.Dead);
+        prey.addAll(new_prey);
 
         new_plants = new HashSet<>();
-        plants.removeIf(Plant::tick);
+        plants.removeIf(plant -> plant.tick() == TickStatus.Dead);
         plants.addAll(new_plants);
 
         growth += Config.PLANT_GROWTH;

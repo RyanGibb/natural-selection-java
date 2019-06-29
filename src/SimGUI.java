@@ -19,7 +19,8 @@ public class SimGUI {
     Simulation sim;
     JFrame frame;
 
-    public Collection<Animal> animals = new HashSet<>();
+    public Collection<Predator> predators = new HashSet<>();
+    public Collection<Prey> prey = new HashSet<>();
     public Collection<Plant> plants = new HashSet<>();
 
     public SimGUI(Simulation sim) {
@@ -126,8 +127,11 @@ public class SimGUI {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setBackground(Color.WHITE);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        for (Animal animal : animals) {
-            drawAnimal(g2d, animal.color, animal, animal.radius);
+        for (Predator predator : predators) {
+            drawAnimal(g2d, predator.color, predator, predator.radius);
+        }
+        for (Prey prey : prey) {
+            drawAnimal(g2d, prey.color, prey, prey.radius);
         }
         for (Plant plant : plants) {
             drawPlant(g2d, plant.color, plant, plant.radius);
@@ -148,7 +152,6 @@ public class SimGUI {
 
         double statusBarsSizeRatio = 0.2;
         double statusBarSize = statusBarsSizeRatio * diameter;
-        g2d.setColor(HEALTH_COLOR);
         Rectangle.Double health = new Rectangle.Double(
                 topLeft.x,
                 centre.y - statusBarSize,
@@ -159,9 +162,9 @@ public class SimGUI {
                 centre.y,
                 diameter * animal.energy / animal.max_energy,
                 statusBarSize);
-        g2d.setColor(Color.red);
+        g2d.setColor(HEALTH_COLOR);
         g2d.fill(health);
-        g2d.setColor(Color.green);
+        g2d.setColor(ENERGY_COLOR);
         g2d.fill(energy);
     }
 
@@ -189,7 +192,8 @@ public class SimGUI {
     }
 
     public void display() {
-        animals = new HashSet<>(sim.world.animals);
+        predators = new HashSet<>(sim.world.predators);
+        prey = new HashSet<>(sim.world.prey);
         plants = new HashSet<>(sim.world.plants);
         frame.repaint();
     }

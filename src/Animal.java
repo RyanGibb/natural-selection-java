@@ -1,7 +1,7 @@
 import java.awt.*;
-import java.util.Iterator;
+import java.util.Collection;
 
-public class Animal extends Entity<Animal> {
+public abstract class Animal<T extends Animal> extends Entity<T> {
     double energy;
     double max_energy;
     double hunger;
@@ -9,15 +9,15 @@ public class Animal extends Entity<Animal> {
     double reproduce_health_given;
     double move_distance;
     double sight;
-    double plant_eating;
+    double eating_speed;
 
     Animal(World world, Point loc, double radius, double health, Color color,
-           double energy, double reproduce_health_given, double sight, double plant_eating) {
-        this(world, loc, radius, areaFrom(radius), health, color, energy, reproduce_health_given, sight, plant_eating);
+           double energy, double reproduce_health_given, double sight, double eating_speed) {
+        this(world, loc, radius, areaFrom(radius), health, color, energy, reproduce_health_given, sight, eating_speed);
     }
 
-    private Animal(World world, Point loc, double radius, double area, double health, Color color,
-                  double energy, double reproduce_health_given, double sight, double plant_eating) {
+    Animal(World world, Point loc, double radius, double area, double health, Color color,
+                  double energy, double reproduce_health_given, double sight, double eating_speed) {
         super(world, loc, radius, area, health, area * Config.HEALTH_PER_AREA, color);
         this.hunger = area * Config.HUNGER_PER_AREA;
         this.energy = energy;
@@ -26,11 +26,11 @@ public class Animal extends Entity<Animal> {
         this.reproduce_health_given = reproduce_health_given;
         this.move_distance = radius * Config.MOVE_DISTANCE_PER_RADIUS;
         this.sight = sight;
-        this.plant_eating = plant_eating;
+        this.eating_speed = eating_speed;
     }
 
     @Override
-    public boolean tick() {
+    public TickStatus tick() {
         energy -= hunger;
         if (energy < 0) {
             health -= hunger_damage;
@@ -39,71 +39,23 @@ public class Animal extends Entity<Animal> {
             health += Config.HEALTH_REGAIN;
             energy -= Config.HEALTH_REGAIN;
         }
-        if(super.tick()){
-            return true;
+        if(super.tick() == TickStatus.Dead){
+            return TickStatus.Dead;
         }
-        eatPlant(find_plant());
         if (health >= max_health) {
             health = max_health;
             if (energy >= max_energy) {
-                world.new_animals.add(reproduce());
-                energy = max_energy - reproduce_health_given;
+                return TickStatus.Reproduce;
             }
         }
-        return false;
+        return TickStatus.Nothing;
     }
 
-    private void eatPlant(Plant plant) {
-        if (plant != null) {
-            double energy_gained = plant.health < plant_eating ? plant.health : plant_eating;
-            plant.health -= plant_eating;
-            if (plant.health <= 0) {
-                world.plants.remove(plant);
-            }
-            energy += energy_gained * Config.ANIMAL_EATING_PLANT_RATIO;
-        }
-    }
-
-    private Plant find_plant() {
-        Iterator<Plant> iterator = world.plants.iterator();
-        if (!iterator.hasNext()) {
-            wander();
-            return null;
-        }
-        Plant plant = iterator.next();
-        Plant closest = plant;
-        double min_distance = plant.loc.distance(this.loc);
-        while (iterator.hasNext()) {
-            plant = iterator.next();
-            double distance = plant.loc.distance(this.loc);
-            if (distance < min_distance) {
-                min_distance = distance;
-                closest = plant;
-            }
-        }
-        if (min_distance > sight) {
-            wander();
-        }
-        double edge_distance = min_distance - radius - closest.radius;
-        if (edge_distance > move_distance) {
-            loc.move_point(closest.loc, move_distance);
-            energy -= Config.ENERGY_PER_DISTANCE * move_distance;
-            check_loc();
-        }
-        else {
-            loc.move_point(closest.loc, edge_distance);
-            energy -= Config.ENERGY_PER_DISTANCE * edge_distance;
-            check_loc();
-            return closest;
-        }
-        return null;
-    }
-
-    double wander_angle = Math.random() * 2 * Math.PI;
-    double wander_angle_delta = Math.PI / 2;
-    double wander_ticks = 10;
-    double wander_count = wander_ticks;
-    private void wander() {
+    private double wander_angle = Math.random() * 2 * Math.PI;
+    private static final double wander_angle_delta = Math.PI / 2;
+    private double wander_ticks = 10;
+    private double wander_count = wander_ticks;
+    void wander() {
         loc.move_angle(wander_angle, move_distance);
         energy -= Config.ENERGY_PER_DISTANCE * move_distance;
         check_loc();
@@ -118,24 +70,43 @@ public class Animal extends Entity<Animal> {
         wander_count--;
     }
 
-    @Override
-    public Animal reproduce() {
-        Point new_loc = Point.random(loc, radius * 2, radius * 2);
-        boolean mutate = Math.random() < Config.MUTATION_CHANCE;
-        double new_area = area;
-        if (mutate) {
-            new_area += (Math.random() - 0.5) * 2 + new_area; // add -1 to 1
+    <S extends Entity> S moveTo(EntityDistance<S> entityDistance) {
+        if (entityDistance == null) {
+            wander();
+            return null;
         }
-        return new Animal(
-                world,
-                new_loc,
-                radiusFrom(new_area),
-                new_area,
-                reproduce_health_given,
-                color,
-                0,
-                reproduce_health_given,
-                sight,
-                plant_eating);
+        S animal = entityDistance.entity;
+        double distance = entityDistance.distance;
+        if (distance > sight) {
+            wander();
+            return null;
+        }
+        double edge_distance = distance - radius - animal.radius;
+        if (edge_distance > move_distance) {
+            loc.move_point(animal.loc, move_distance);
+            energy -= Config.ENERGY_PER_DISTANCE * move_distance;
+            check_loc();
+            return null;
+        }
+        else {
+            loc.move_point(animal.loc, edge_distance);
+            energy -= Config.ENERGY_PER_DISTANCE * edge_distance;
+            check_loc();
+            return animal;
+        }
     }
+
+    <U extends Entity> void eat(Collection<U> collection, U entity, double ratio) {
+        if (entity != null) {
+            double energy_gained = entity.health < eating_speed ? entity.health : eating_speed;
+            entity.health -= eating_speed;
+            if (entity.health <= 0) {
+                collection.remove(entity);
+            }
+            energy += energy_gained * ratio;
+        }
+    }
+
+    public abstract T reproduce();
+
 }

@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Iterator;
 
 public abstract class Entity<T extends Entity> {
     Point loc;
@@ -20,11 +21,12 @@ public abstract class Entity<T extends Entity> {
     }
 
     // return true if dead
-    public boolean tick() {
-        return health < 0;
+    public TickStatus tick() {
+        if(health < 0) {
+            return TickStatus.Dead;
+        }
+        return TickStatus.Nothing;
     }
-
-    public abstract T reproduce();
 
     public void check_loc(){
         if (loc.y + radius > world.dimensions.y) {
@@ -42,12 +44,41 @@ public abstract class Entity<T extends Entity> {
         }
     }
 
+    public abstract T reproduce();
+
     public static double radiusFrom(double area) {
         return Math.sqrt(area / Math.PI);
     }
 
     public static double areaFrom(double radius) {
         return Math.PI * radius * radius;
+    }
+
+    static class EntityDistance<S extends Entity> {
+        S entity;
+        double distance;
+
+        EntityDistance(S entity, double distance) {
+            this.entity = entity;
+            this.distance = distance;
+        }
+    }
+    <S extends Entity, U extends Entity> EntityDistance<S> findClosest(Iterator<S> iterator) {
+        if (!iterator.hasNext()) {
+            return null;
+        }
+        S entity = iterator.next();
+        S closest = entity;
+        double min_distance = closest.loc.distance(this.loc);
+        while (iterator.hasNext()) {
+            entity = iterator.next();
+            double distance = entity.loc.distance(this.loc);
+            if (distance < min_distance) {
+                min_distance = distance;
+                closest = entity;
+            }
+        }
+        return new EntityDistance<>(closest, min_distance);
     }
 
 }
