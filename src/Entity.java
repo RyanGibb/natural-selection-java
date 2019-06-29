@@ -3,15 +3,17 @@ import java.awt.*;
 public abstract class Entity<T extends Entity> {
     Point loc;
     double radius;
+    double area;
     double health;
     double max_health;
     Color color;
     World world;
 
-    public Entity(World world, Point loc, double radius, double health, double max_health, Color color) {
+    Entity(World world, Point loc, double radius, double area, double health, double max_health, Color color) {
         this.world = world;
         this.loc = loc;
         this.radius = radius;
+        this.area = area;
         this.health = health;
         this.max_health = max_health;
         this.color = color;
@@ -38,6 +40,14 @@ public abstract class Entity<T extends Entity> {
         else if (loc.x - radius < 0) {
             loc.x = loc.x + radius;
         }
+    }
+
+    public static double radiusFrom(double area) {
+        return Math.sqrt(area / Math.PI);
+    }
+
+    public static double areaFrom(double radius) {
+        return Math.PI * radius * radius;
     }
 
 }

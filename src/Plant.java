@@ -3,7 +3,7 @@ import java.awt.*;
 public class Plant extends Entity<Plant> {
 
     public Plant(World world, Point loc, double radius, double health, double max_health, Color color) {
-        super(world, loc, radius, health, max_health, color);
+        super(world, loc, radius, areaFrom(radius), health, max_health, color);
     }
 
     @Override

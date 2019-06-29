@@ -16,15 +16,15 @@ public class World {
         animals = new HashSet<>();
         for (int i = 0; i < Config.NUM_ANIMAL; i++) {
             animals.add(new Animal(this, randomPoint(Config.RADIUS_ANIMAL), Config.RADIUS_ANIMAL,
-                    Config.MAX_HEALTH_ANIMAL, Config.ANIMAL_COLOR,
-                    Config.MAX_ENERGY_ANIMAL,
+                    Config.INITIAL_HEALTH_ANIMAL, Config.ANIMAL_COLOR,
+                    Config.INITIAL_ENERGY_ANIMAL,
                     Config.REPRODUCE_HEALTH_GIVEN_ANIMAL,
                     Config.ANIMAL_SIGHT, Config.ANIMAL_PLANT_EATING));
         }
         plants = new HashSet<>();
         for (int i = 0; i < Config.NUM_PLANT; i++) {
             plants.add(new Plant(this, randomPoint(Config.RADIUS_PLANT), Config.RADIUS_PLANT,
-                    Config.MAX_HEALTH_PLANT, Config.MAX_HEALTH_PLANT, Config.PLANT_COLOR));
+                    Config.INITIAL_HEALTH_PLANT, Config.MAX_HEALTH_PLANT, Config.PLANT_COLOR));
         }
     }
 
@@ -40,7 +40,7 @@ public class World {
         growth += Config.PLANT_GROWTH;
         for (int i = 1; i <= growth; i++) {
             plants.add(new Plant(this, randomPoint(Config.RADIUS_PLANT), Config.RADIUS_PLANT,
-                    Config.MAX_HEALTH_PLANT, Config.MAX_HEALTH_PLANT, Config.PLANT_COLOR));
+                    Config.INITIAL_HEALTH_PLANT, Config.INITIAL_HEALTH_PLANT, Config.PLANT_COLOR));
         }
         if (growth > 1) {
             growth = growth - (int) growth;

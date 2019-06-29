@@ -11,13 +11,18 @@ public class Animal extends Entity<Animal> {
     double sight;
     double plant_eating;
 
-    public Animal(World world, Point loc, double radius, double health, Color color,
+    Animal(World world, Point loc, double radius, double health, Color color,
+           double energy, double reproduce_health_given, double sight, double plant_eating) {
+        this(world, loc, radius, areaFrom(radius), health, color, energy, reproduce_health_given, sight, plant_eating);
+    }
+
+    private Animal(World world, Point loc, double radius, double area, double health, Color color,
                   double energy, double reproduce_health_given, double sight, double plant_eating) {
-        super(world, loc, radius, health, radius * Config.HEALTH_PER_RADIUS, color);
-        this.hunger = radius * Config.HUNGER_PER_RADIUS;
+        super(world, loc, radius, area, health, area * Config.HEALTH_PER_AREA, color);
+        this.hunger = area * Config.HUNGER_PER_AREA;
         this.energy = energy;
-        this.max_energy = radius * Config.ENERGY_PER_RADIUS;
-        this.hunger_damage = radius * Config.HUNGER_DAMAGE_PER_RADIUS;
+        this.max_energy = area * Config.ENERGY_PER_AREA;
+        this.hunger_damage = area * Config.HUNGER_DAMAGE_PER_AREA;
         this.reproduce_health_given = reproduce_health_given;
         this.move_distance = radius * Config.MOVE_DISTANCE_PER_RADIUS;
         this.sight = sight;
@@ -117,14 +122,15 @@ public class Animal extends Entity<Animal> {
     public Animal reproduce() {
         Point new_loc = Point.random(loc, radius * 2, radius * 2);
         boolean mutate = Math.random() < Config.MUTATION_CHANCE;
-        double new_radius = radius;
+        double new_area = area;
         if (mutate) {
-            new_radius += (Math.random() - 0.5) * 2 + new_radius; // +-1
+            new_area += (Math.random() - 0.5) * 2 + new_area; // add -1 to 1
         }
         return new Animal(
                 world,
                 new_loc,
-                new_radius,
+                radiusFrom(new_area),
+                new_area,
                 reproduce_health_given,
                 color,
                 0,
