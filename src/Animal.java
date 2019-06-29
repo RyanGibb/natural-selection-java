@@ -11,16 +11,15 @@ public class Animal extends Entity<Animal> {
     double sight;
     double plant_eating;
 
-    public Animal(World world, Point loc, double radius, double health, double max_health, Color color,
-                  double energy, double max_energy, double hunger, double hunger_damage, double reproduce_health_given,
-                  double move_distance, double sight, double plant_eating) {
-        super(world, loc, radius, health, max_health, color);
-        this.hunger = hunger;
+    public Animal(World world, Point loc, double radius, double health, Color color,
+                  double energy, double reproduce_health_given, double sight, double plant_eating) {
+        super(world, loc, radius, health, radius * Config.HEALTH_PER_RADIUS, color);
+        this.hunger = radius * Config.HUNGER_PER_RADIUS;
         this.energy = energy;
-        this.max_energy = max_energy;
-        this.hunger_damage = hunger_damage;
+        this.max_energy = radius * Config.ENERGY_PER_RADIUS;
+        this.hunger_damage = radius * Config.HUNGER_DAMAGE_PER_RADIUS;
         this.reproduce_health_given = reproduce_health_given;
-        this.move_distance = move_distance;
+        this.move_distance = radius * Config.MOVE_DISTANCE_PER_RADIUS;
         this.sight = sight;
         this.plant_eating = plant_eating;
     }
@@ -83,10 +82,12 @@ public class Animal extends Entity<Animal> {
         double edge_distance = min_distance - radius - closest.radius;
         if (edge_distance > move_distance) {
             loc.move_point(closest.loc, move_distance);
+            energy -= Config.ENERGY_PER_DISTANCE * move_distance;
             check_loc();
         }
         else {
             loc.move_point(closest.loc, edge_distance);
+            energy -= Config.ENERGY_PER_DISTANCE * edge_distance;
             check_loc();
             return closest;
         }
@@ -99,6 +100,7 @@ public class Animal extends Entity<Animal> {
     double wander_count = wander_ticks;
     private void wander() {
         loc.move_angle(wander_angle, move_distance);
+        energy -= Config.ENERGY_PER_DISTANCE * move_distance;
         check_loc();
         if (loc.x == 0 || loc.y == world.dimensions.x
                 || loc.y == 0 || loc.y == world.dimensions.y) {
@@ -115,31 +117,19 @@ public class Animal extends Entity<Animal> {
     public Animal reproduce() {
         Point new_loc = Point.random(loc, radius * 2, radius * 2);
         boolean mutate = Math.random() < Config.MUTATION_CHANCE;
-//      (r < World.MUTATION_CHANCE ? Math.random() * 2 - 1: 0) +
+        double new_radius = radius;
+        if (mutate) {
+            new_radius += (Math.random() - 0.5) * 2 + new_radius; // +-1
+        }
         return new Animal(
                 world,
                 new_loc,
-                radius,
+                new_radius,
                 reproduce_health_given,
-                max_health,
                 color,
-//                new Color(
-//                        ((((int) (mutate ? Math.random() * 50 - 25: 0) + color.getRed()) % 255) + 255) %255,
-//                        ((((int) (mutate ? Math.random() * 50 - 25: 0) + color.getBlue()) % 255) + 255) % 255,
-//                        ((((int) (mutate ? Math.random() * 50 - 25: 0) + color.getGreen()) % 255) + 255) %255
-//                ),
                 0,
-                max_energy,
-                hunger,
-                hunger_damage,
                 reproduce_health_given,
-//                (mutate ? 1 : 0) + move_distance,
-                move_distance,
-//                (mutate ? 10 : 0) + sight,
                 sight,
                 plant_eating);
     }
-
-
-
 }

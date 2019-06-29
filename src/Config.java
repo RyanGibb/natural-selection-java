@@ -16,12 +16,20 @@ public class Config {
     public static final double RADIUS_PLANT = 3;
 
     public static final double ANIMAL_EATING_PLANT_RATIO = 0.5;
-    public static final double MUTATION_CHANCE = 0.1;
+    public static final double MUTATION_CHANCE = 0.01;
 
-    public static final double ANIMAL_MOVE_DISTANCE = 2;
+//    public static final double ANIMAL_MOVE_DISTANCE = 2;
     public static final double ANIMAL_PLANT_EATING = 10;
-    public static final double HUNGER = 0.5;
-    public static final double HUNGER_DAMAGE = 0.5;
+//    public static final double HUNGER = 0.5;
+//    public static final double HUNGER_DAMAGE = 0.5;
     public static final double HEALTH_REGAIN = 1;
-    public static final double PLANT_GROWTH = 1;
+    public static final double PLANT_GROWTH = 0.3; //3
+
+    public static final double HEALTH_PER_RADIUS = 10;
+    public static final double ENERGY_PER_RADIUS = 10;
+    public static final double HUNGER_PER_RADIUS = 0.01;
+    public static final double HUNGER_DAMAGE_PER_RADIUS = 0.05;
+    public static final double ENERGY_PER_DISTANCE = 0.05; //0.01
+
+    public static final double MOVE_DISTANCE_PER_RADIUS = 0.2;
 }
