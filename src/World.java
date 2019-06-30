@@ -17,7 +17,7 @@ public class World {
         this.dimensions = dimensions;
         predators = new HashSet<>();
         for (int i = 0; i < Config.NUM_PREDS; i++) {
-            predators.add(new Predator(this, randomPoint(Config.RADIUS_ANIMAL), Config.RADIUS_ANIMAL,
+            predators.add(new Predator(this, randomPoint(Config.INITIAL_RADIUS_ANIMAL), Config.INITIAL_RADIUS_ANIMAL,
                     Config.INITIAL_HEALTH_ANIMAL, Config.PREDATOR_COLOR,
                     Config.INITIAL_ENERGY_ANIMAL,
                     Config.REPRODUCE_HEALTH_GIVEN_ANIMAL,
@@ -25,7 +25,7 @@ public class World {
         }
         prey = new HashSet<>();
         for (int i = 0; i < Config.NUM_PREY; i++) {
-            prey.add(new Prey(this, randomPoint(Config.RADIUS_ANIMAL), Config.RADIUS_ANIMAL,
+            prey.add(new Prey(this, randomPoint(Config.INITIAL_RADIUS_ANIMAL), Config.INITIAL_RADIUS_ANIMAL,
                     Config.INITIAL_HEALTH_ANIMAL, Config.PREY_COLOR,
                     Config.INITIAL_ENERGY_ANIMAL,
                     Config.REPRODUCE_HEALTH_GIVEN_ANIMAL,
@@ -47,9 +47,9 @@ public class World {
         prey.removeIf(prey -> prey.tick() == TickStatus.Dead);
         prey.addAll(new_prey);
 
-        new_plants = new HashSet<>();
-        plants.removeIf(plant -> plant.tick() == TickStatus.Dead);
-        plants.addAll(new_plants);
+//        new_plants = new HashSet<>();
+//        plants.removeIf(plant -> plant.tick() == TickStatus.Dead);
+//        plants.addAll(new_plants);
 
         growth += Config.PLANT_GROWTH;
         for (int i = 1; i <= growth; i++) {

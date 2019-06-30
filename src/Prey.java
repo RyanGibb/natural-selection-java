@@ -20,8 +20,10 @@ public class Prey extends Animal {
                 world.new_prey.add(reproduce());
                 energy = max_energy - reproduce_health_given;
         }
-        Plant plant = (Plant) moveTo(findClosest(world.plants.iterator()));
-        eatPlant(plant);
+        if (energy < max_energy) {
+            Plant plant = (Plant) moveTo(findClosest(world.plants.iterator()));
+            eatPlant(plant);
+        }
         return TickStatus.Nothing;
     }
 
