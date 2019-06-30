@@ -10,6 +10,7 @@ public abstract class Animal<T extends Animal> extends Entity<T> {
     double move_distance;
     double sight;
     double eating_speed;
+    int pregnancy = -1;
 
     Animal(World world, Point loc, double radius, double health, Color color,
            double energy, double reproduce_health_given, double sight, double eating_speed) {
@@ -36,17 +37,25 @@ public abstract class Animal<T extends Animal> extends Entity<T> {
             health -= hunger_damage;
         }
         else if (energy > 0 && health < max_health) {
-            health += Config.HEALTH_REGAIN;
-            energy -= Config.HEALTH_REGAIN;
+            double health_difference = max_health - health;
+            double health_gain = health_difference > Config.HEALTH_REGAIN ? Config.HEALTH_REGAIN : health_difference;
+            health += health_gain;
+            energy -= health_gain;
         }
         if(super.tick() == TickStatus.Dead){
             return TickStatus.Dead;
         }
-        if (health >= max_health) {
-            health = max_health;
-            if (energy >= max_energy) {
-                return TickStatus.Reproduce;
+        if (pregnancy < 0) { // If not pregnant,
+            if (health >= max_health && energy >= max_energy) { // healthy, and have energy
+                pregnancy = Config.ANIMAL_PREGNANCY; // get pregnant.
             }
+        }
+        else if (pregnancy == 0){ // If due,
+            pregnancy = -1; // be not pregnant
+            return TickStatus.Reproduce; // Have baby
+        }
+        else {
+            pregnancy--; // Become more pregnant
         }
         return TickStatus.Nothing;
     }

@@ -13,6 +13,7 @@ public class Config {
     public static final double RADIUS_ANIMAL = 10;
     public static final double REPRODUCE_HEALTH_GIVEN_ANIMAL = 100;
     public static final double ANIMAL_SIGHT = 100;
+    public static final int ANIMAL_PREGNANCY = 250;
 
     public static final double INITIAL_HEALTH_PLANT = 100;
     public static final double MAX_HEALTH_PLANT = 100;
